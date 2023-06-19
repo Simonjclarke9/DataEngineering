@@ -1,0 +1,68 @@
+To retrieve the top 100 viewed Wikipedia articles and save the results in Google Cloud Platform (GCP) BigQuery using Python 3.9, you'll need to install the required dependencies and set up authentication. Follow the steps below:
+
+Install the required dependencies:
+
+Install the google-cloud-bigquery library using pip:
+bashCopy code
+pip install google-cloud-bigquery
+Install the requests library to make HTTP requests to the Wikipedia API:
+bashCopy code
+pip install requests
+Set up authentication:
+
+Create a service account key file in JSON format with the necessary permissions to access BigQuery. Follow the official GCP documentation for instructions on creating a service account and obtaining the key file.
+Set the GOOGLE_APPLICATION_CREDENTIALS environment variable to the path of the JSON key file. For example:
+bashCopy code
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/keyfile.json
+Write the Python script to retrieve the top 100 viewed Wikipedia articles and save them in BigQuery. Here's an example script:
+
+pythonCopy code
+
+import requests from google.cloud 
+import bigquery 
+# Make a GET request to the Wikipedia API to retrieve the top 100 viewed articles 
+url = "https://wikimedia.org/api/rest_v1/metrics/pageviews/top/en.wikipedia/all-access/2023/06/all-days" 
+response = requests.get(url) data = response.json() 
+# Extract the necessary information (title and categories) from the API response 
+
+articles = [] 
+foritem in data["items"]: 
+    article = { "title": item["article"], 
+                "categories": item.get("categories", []) 
+                } 
+    articles.append(article) 
+    
+    # Set up the BigQuery client 
+    client = bigquery.Client() 
+    
+    
+    # Define the BigQuery dataset and table to store the 
+    resultsdataset_id = "your_dataset_id" 
+    table_id = "your_table_id" 
+    
+    # Create the BigQuery dataset if it doesn't already exist 
+    dataset = bigquery.Dataset(f"{client.project}.{dataset_id}") 
+    dataset = client.create_dataset(dataset, exists_ok=True) 
+    
+    # Create the BigQuery table if it doesn't already exist 
+    table = bigquery.Table(f"{client.project}.{dataset_id}.{table_id}") 
+    table.schema = [ bigquery.SchemaField("title", "STRING", mode="REQUIRED"), 
+                     bigquery.SchemaField("categories", "STRING", mode="REPEATED") 
+                    ] 
+    table = client.create_table(table, exists_ok=True) 
+    # Insert the retrieved articles into the BigQuery table 
+    rows_to_insert = [(article["title"], article["categories"]) for article inarticles] 
+    errors = client.insert_rows(table, rows_to_insert) 
+    
+    if not errors: 
+        print("Data successfully inserted into BigQuery table.") 
+    else: 
+        print(f"Encountered errors while inserting data into BigQuery: {errors}")
+    
+    Make sure to replace "your_dataset_id" and "your_table_id" with your desired dataset and table names.
+
+Run the script using Python 3.9:
+bashCopy code
+python script.py
+This script retrieves the top 100 viewed Wikipedia articles using the Wikimedia REST API and saves them in a BigQuery table specified by dataset_id and table_id.<!DOCTYPE html>
+
