@@ -3,7 +3,7 @@ bin/
 dateutil/
 greenlet/
 include/
-numpty/
+numpy/
 pandas/
 pytz/
 six/
