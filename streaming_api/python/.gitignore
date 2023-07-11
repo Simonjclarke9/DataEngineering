@@ -1,0 +1,12 @@
+## don't add folders for libs
+bin/
+dateutil/
+greenlet/
+include/
+numpty/
+pandas/
+pytz/
+six/
+tzdata/
+
+
